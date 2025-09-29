@@ -45,6 +45,12 @@ export function Navbar() {
                 >
                   Dashboard
                 </Button>
+                <Button 
+                  onClick={() => navigate('/profile')}
+                  variant="outline"
+                >
+                  Profile
+                </Button>
                 <Button onClick={handleSignOut} variant="outline">
                   Sign Out
                 </Button>

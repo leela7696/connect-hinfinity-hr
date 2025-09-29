@@ -11,6 +11,8 @@ import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import { UserManagementDashboard } from "./components/UserManagement/UserManagementDashboard";
+import { UserProfileManagement } from "./components/UserManagement/UserProfileManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -40,6 +42,22 @@ const App: React.FC = () => {
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/user-management" 
+                element={
+                  <ProtectedRoute requiredRoles={['admin', 'hr']}>
+                    <UserManagementDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/profile" 
+                element={
+                  <ProtectedRoute>
+                    <UserProfileManagement />
                   </ProtectedRoute>
                 } 
               />
