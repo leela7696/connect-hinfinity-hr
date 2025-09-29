@@ -1,6 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { StatsCard } from '@/components/StatsCard';
+import { QuickActionCard } from '@/components/QuickActionCard';
+import { ActivityFeed } from '@/components/ActivityFeed';
+import { MetricsOverview } from '@/components/MetricsOverview';
 import { 
   Users, 
   UserCheck, 
@@ -52,28 +56,67 @@ export default function AdminDashboard() {
 
   const recentActivities = [
     {
-      type: "user_created",
+      id: "1",
+      type: "success" as const,
       message: "New user John Smith registered",
       time: "2 minutes ago",
-      status: "success"
+      details: "Employee onboarding completed successfully"
     },
     {
-      type: "system_update",
+      id: "2", 
+      type: "success" as const,
       message: "System backup completed successfully",
       time: "1 hour ago",
-      status: "success"
+      details: "All data backed up to secure storage"
     },
     {
-      type: "security_alert",
+      id: "3",
+      type: "warning" as const,
       message: "Failed login attempts detected",
-      time: "3 hours ago",
-      status: "warning"
+      time: "3 hours ago", 
+      details: "Multiple failed attempts from IP 192.168.1.100"
     },
     {
-      type: "maintenance",
+      id: "4",
+      type: "info" as const,
       message: "Scheduled maintenance completed",
       time: "1 day ago",
-      status: "info"
+      details: "System performance optimizations applied"
+    }
+  ];
+
+  const systemMetrics = [
+    {
+      label: "CPU Usage",
+      value: 65,
+      target: 100,
+      trend: "stable" as const,
+      format: "percentage" as const,
+      change: 2
+    },
+    {
+      label: "Memory Usage", 
+      value: 78,
+      target: 100,
+      trend: "up" as const,
+      format: "percentage" as const,
+      change: 5
+    },
+    {
+      label: "Storage Used",
+      value: 2100,
+      target: 5000,
+      trend: "up" as const,
+      format: "number" as const,
+      change: 150
+    },
+    {
+      label: "Active Sessions",
+      value: 189,
+      target: 250,
+      trend: "stable" as const,
+      format: "number" as const,
+      change: -3
     }
   ];
 
@@ -128,26 +171,21 @@ export default function AdminDashboard() {
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {stats.map((stat, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                      <p className="text-sm text-muted-foreground mt-1">{stat.change}</p>
-                    </div>
-                    <div className={`p-3 rounded-full bg-secondary ${stat.color}`}>
-                      <stat.icon className="h-6 w-6" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <StatsCard
+                key={index}
+                title={stat.title}
+                value={stat.value}
+                change={stat.change}
+                icon={stat.icon}
+                color={stat.color}
+                className="animate-fade-in"
+              />
             ))}
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Quick Actions */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
@@ -161,62 +199,34 @@ export default function AdminDashboard() {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {quickActions.map((action, index) => (
-                      <div key={index} className="p-4 border border-border rounded-lg hover:bg-secondary/50 transition-colors duration-200 cursor-pointer">
-                        <div className="flex items-start space-x-3">
-                          <div className="p-2 bg-primary/10 rounded-lg">
-                            <action.icon className="h-5 w-5 text-primary" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-foreground">{action.title}</h3>
-                            <p className="text-sm text-muted-foreground mb-3">{action.description}</p>
-                            <Button variant="outline" size="sm">
-                              {action.action}
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
+                      <QuickActionCard
+                        key={index}
+                        title={action.title}
+                        description={action.description}
+                        icon={action.icon}
+                        action={action.action}
+                        className="animate-fade-in"
+                      />
                     ))}
                   </div>
                 </CardContent>
               </Card>
+
+              {/* System Metrics */}
+              <MetricsOverview 
+                title="System Performance" 
+                metrics={systemMetrics}
+                className="animate-fade-in"
+              />
             </div>
 
             {/* Recent Activities */}
             <div>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Clock className="h-5 w-5 mr-2" />
-                    Recent Activities
-                  </CardTitle>
-                  <CardDescription>
-                    Latest system events and notifications
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentActivities.map((activity, index) => (
-                      <div key={index} className="flex items-start space-x-3">
-                        <div className="flex-shrink-0">
-                          {activity.status === 'success' && (
-                            <CheckCircle className="h-5 w-5 text-green-500" />
-                          )}
-                          {activity.status === 'warning' && (
-                            <AlertCircle className="h-5 w-5 text-orange-500" />
-                          )}
-                          {activity.status === 'info' && (
-                            <Clock className="h-5 w-5 text-blue-500" />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm text-foreground">{activity.message}</p>
-                          <p className="text-xs text-muted-foreground">{activity.time}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <ActivityFeed 
+                activities={recentActivities}
+                title="System Activities"
+                className="animate-fade-in"
+              />
             </div>
           </div>
 
