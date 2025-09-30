@@ -179,14 +179,14 @@ export function UserForm({ user, onClose, onSave }: UserFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Department</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={(value) => field.onChange(value === 'none' ? '' : value)} defaultValue={field.value || 'none'}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select department" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">No Department</SelectItem>
+                        <SelectItem value="none">No Department</SelectItem>
                         <SelectItem value="engineering">Engineering</SelectItem>
                         <SelectItem value="hr">Human Resources</SelectItem>
                         <SelectItem value="finance">Finance</SelectItem>

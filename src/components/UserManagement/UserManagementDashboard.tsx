@@ -56,7 +56,8 @@ export function UserManagementDashboard() {
   }
 
   const handleFilterChange = (key: keyof UserFilters, value: string) => {
-    const newFilters = { ...filters, [key]: value || undefined };
+    const filterValue = value === 'all' ? '' : value;
+    const newFilters = { ...filters, [key]: filterValue || undefined };
     setFilters(newFilters);
     fetchUsers(newFilters);
   };
@@ -173,12 +174,12 @@ export function UserManagementDashboard() {
                     />
                   </div>
                   
-                  <Select value={filters.role || ''} onValueChange={(value) => handleFilterChange('role', value)}>
+                  <Select value={filters.role || 'all'} onValueChange={(value) => handleFilterChange('role', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Filter by role" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Roles</SelectItem>
+                      <SelectItem value="all">All Roles</SelectItem>
                       <SelectItem value="admin">Admin</SelectItem>
                       <SelectItem value="hr">HR</SelectItem>
                       <SelectItem value="manager">Manager</SelectItem>
@@ -186,12 +187,12 @@ export function UserManagementDashboard() {
                     </SelectContent>
                   </Select>
 
-                  <Select value={filters.department || ''} onValueChange={(value) => handleFilterChange('department', value)}>
+                  <Select value={filters.department || 'all'} onValueChange={(value) => handleFilterChange('department', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Filter by department" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Departments</SelectItem>
+                      <SelectItem value="all">All Departments</SelectItem>
                       <SelectItem value="engineering">Engineering</SelectItem>
                       <SelectItem value="hr">Human Resources</SelectItem>
                       <SelectItem value="finance">Finance</SelectItem>
@@ -201,14 +202,14 @@ export function UserManagementDashboard() {
                   </Select>
 
                   <Select 
-                    value={filters.is_active?.toString() || ''} 
+                    value={filters.is_active?.toString() || 'all'} 
                     onValueChange={(value) => handleFilterChange('is_active', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Status</SelectItem>
+                      <SelectItem value="all">All Status</SelectItem>
                       <SelectItem value="true">Active</SelectItem>
                       <SelectItem value="false">Suspended</SelectItem>
                     </SelectContent>

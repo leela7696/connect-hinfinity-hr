@@ -171,12 +171,12 @@ export function AuditLogDashboard() {
               />
             </div>
             
-            <Select value={filters.action || ''} onValueChange={(value) => handleFilterChange('action', value)}>
+            <Select value={filters.action || 'all'} onValueChange={(value) => handleFilterChange('action', value === 'all' ? '' : value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by action" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Actions</SelectItem>
+                <SelectItem value="all">All Actions</SelectItem>
                 <SelectItem value="user_created">User Created</SelectItem>
                 <SelectItem value="user_updated">User Updated</SelectItem>
                 <SelectItem value="role_change">Role Change</SelectItem>
