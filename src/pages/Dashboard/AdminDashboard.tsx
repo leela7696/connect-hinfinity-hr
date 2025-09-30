@@ -19,9 +19,11 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navbar } from '@/components/Navbar';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminDashboard() {
   const { profile } = useAuth();
+  const navigate = useNavigate();
 
   const stats = [
     {
@@ -125,25 +127,29 @@ export default function AdminDashboard() {
       title: "User Management",
       description: "Manage user accounts and permissions",
       icon: Users,
-      action: "View Users"
+      action: "View Users",
+      onClick: () => navigate('/user-management')
     },
     {
       title: "System Settings",
       description: "Configure system preferences",
       icon: Settings,
-      action: "Open Settings"
+      action: "Open Settings",
+      onClick: () => console.log('Settings clicked')
     },
     {
       title: "Analytics",
       description: "View detailed system analytics",
       icon: BarChart3,
-      action: "View Analytics"
+      action: "View Analytics",
+      onClick: () => console.log('Analytics clicked')
     },
     {
       title: "Audit Logs",
       description: "Review system audit trails",
       icon: FileText,
-      action: "View Logs"
+      action: "View Logs",
+      onClick: () => navigate('/user-management')
     }
   ];
 
@@ -205,6 +211,7 @@ export default function AdminDashboard() {
                         description={action.description}
                         icon={action.icon}
                         action={action.action}
+                        onClick={action.onClick}
                         className="animate-fade-in"
                       />
                     ))}

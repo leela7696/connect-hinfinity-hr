@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Building } from 'lucide-react';
+import { Menu, X, Building, Users } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -45,6 +45,16 @@ export function Navbar() {
                 >
                   Dashboard
                 </Button>
+                {(profile?.role === 'admin' || profile?.role === 'hr') && (
+                  <Button 
+                    onClick={() => navigate('/user-management')}
+                    variant="outline"
+                    className="flex items-center space-x-2"
+                  >
+                    <Users className="h-4 w-4" />
+                    <span>User Management</span>
+                  </Button>
+                )}
                 <Button 
                   onClick={() => navigate('/profile')}
                   variant="outline"
@@ -122,6 +132,29 @@ export function Navbar() {
                     className="w-full"
                   >
                     Dashboard
+                  </Button>
+                  {(profile?.role === 'admin' || profile?.role === 'hr') && (
+                    <Button 
+                      onClick={() => {
+                        navigate('/user-management');
+                        setIsOpen(false);
+                      }}
+                      variant="outline"
+                      className="w-full flex items-center justify-center space-x-2"
+                    >
+                      <Users className="h-4 w-4" />
+                      <span>User Management</span>
+                    </Button>
+                  )}
+                  <Button 
+                    onClick={() => {
+                      navigate('/profile');
+                      setIsOpen(false);
+                    }}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Profile
                   </Button>
                   <Button 
                     onClick={() => {
