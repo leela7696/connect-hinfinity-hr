@@ -13,6 +13,11 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import { UserManagementDashboard } from "./components/UserManagement/UserManagementDashboard";
 import { UserProfileManagement } from "./components/UserManagement/UserProfileManagement";
+import RequestDocument from "./pages/Documents/RequestDocument";
+import MyRequests from "./pages/Documents/MyRequests";
+import MyDocuments from "./pages/Documents/MyDocuments";
+import DocumentRequestsQueue from "./pages/Documents/DocumentRequestsQueue";
+import TemplateManager from "./pages/Documents/TemplateManager";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -61,6 +66,11 @@ const App: React.FC = () => {
                   </ProtectedRoute>
                 } 
               />
+              <Route path="/documents/request" element={<ProtectedRoute><RequestDocument /></ProtectedRoute>} />
+              <Route path="/documents/my-requests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
+              <Route path="/documents/my-documents" element={<ProtectedRoute><MyDocuments /></ProtectedRoute>} />
+              <Route path="/documents/queue" element={<ProtectedRoute requiredRoles={['admin', 'hr']}><DocumentRequestsQueue /></ProtectedRoute>} />
+              <Route path="/documents/templates" element={<ProtectedRoute requiredRoles={['admin']}><TemplateManager /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

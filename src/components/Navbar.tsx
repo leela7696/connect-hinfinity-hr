@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Building, Users } from 'lucide-react';
+import { Menu, X, Building, Users, FileText } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export function Navbar() {
@@ -39,21 +39,18 @@ export function Navbar() {
             
             {user ? (
               <div className="flex items-center space-x-4">
-                <Button 
-                  onClick={() => navigate('/dashboard')}
-                  variant="outline"
-                >
-                  Dashboard
+                <Button onClick={() => navigate('/dashboard')} variant="outline">Dashboard</Button>
+                <Button onClick={() => navigate('/documents/my-requests')} variant="outline">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Documents
                 </Button>
                 {(profile?.role === 'admin' || profile?.role === 'hr') && (
-                  <Button 
-                    onClick={() => navigate('/user-management')}
-                    variant="outline"
-                    className="flex items-center space-x-2"
-                  >
-                    <Users className="h-4 w-4" />
-                    <span>User Management</span>
-                  </Button>
+                  <>
+                    <Button onClick={() => navigate('/documents/queue')} variant="outline">Doc Queue</Button>
+                    <Button onClick={() => navigate('/user-management')} variant="outline">
+                      <Users className="h-4 w-4" />
+                    </Button>
+                  </>
                 )}
                 <Button 
                   onClick={() => navigate('/profile')}
