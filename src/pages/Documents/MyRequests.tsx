@@ -52,9 +52,9 @@ export default function MyRequests() {
                   <Clock className="w-4 h-4" />
                   <span>Requested {new Date(request.created_at).toLocaleDateString()}</span>
                 </div>
-                {request.period_start && (
+                {request.period && (
                   <div>
-                    Period: {new Date(request.period_start).toLocaleDateString()} - {request.period_end ? new Date(request.period_end).toLocaleDateString() : 'N/A'}
+                    Period: {request.period}
                   </div>
                 )}
               </div>

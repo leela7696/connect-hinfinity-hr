@@ -14,6 +14,284 @@ export type Database = {
   }
   public: {
     Tables: {
+      document_audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string | null
+          after_state: Json | null
+          before_state: Json | null
+          created_at: string | null
+          document_id: string | null
+          id: string
+          ip_address: string | null
+          request_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_name?: string | null
+          after_state?: Json | null
+          before_state?: Json | null
+          created_at?: string | null
+          document_id?: string | null
+          id?: string
+          ip_address?: string | null
+          request_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          after_state?: Json | null
+          before_state?: Json | null
+          created_at?: string | null
+          document_id?: string | null
+          id?: string
+          ip_address?: string | null
+          request_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_audit_logs_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "employee_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_audit_logs_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "document_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_requests: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          approver_id: string | null
+          attachments: Json | null
+          comment: string | null
+          created_at: string | null
+          delivery_method: Database["public"]["Enums"]["delivery_method"] | null
+          document_type: Database["public"]["Enums"]["document_type"]
+          due_by: string | null
+          employee_id: string
+          employee_name: string | null
+          escalation_level: number | null
+          format: Database["public"]["Enums"]["document_format"] | null
+          generated_document_url: string | null
+          id: string
+          metadata: Json | null
+          period: string | null
+          purpose: string
+          rejection_reason: string | null
+          sla_hours: number | null
+          status: Database["public"]["Enums"]["document_request_status"] | null
+          template_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approver_id?: string | null
+          attachments?: Json | null
+          comment?: string | null
+          created_at?: string | null
+          delivery_method?:
+            | Database["public"]["Enums"]["delivery_method"]
+            | null
+          document_type: Database["public"]["Enums"]["document_type"]
+          due_by?: string | null
+          employee_id: string
+          employee_name?: string | null
+          escalation_level?: number | null
+          format?: Database["public"]["Enums"]["document_format"] | null
+          generated_document_url?: string | null
+          id?: string
+          metadata?: Json | null
+          period?: string | null
+          purpose: string
+          rejection_reason?: string | null
+          sla_hours?: number | null
+          status?: Database["public"]["Enums"]["document_request_status"] | null
+          template_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approver_id?: string | null
+          attachments?: Json | null
+          comment?: string | null
+          created_at?: string | null
+          delivery_method?:
+            | Database["public"]["Enums"]["delivery_method"]
+            | null
+          document_type?: Database["public"]["Enums"]["document_type"]
+          due_by?: string | null
+          employee_id?: string
+          employee_name?: string | null
+          escalation_level?: number | null
+          format?: Database["public"]["Enums"]["document_format"] | null
+          generated_document_url?: string | null
+          id?: string
+          metadata?: Json | null
+          period?: string | null
+          purpose?: string
+          rejection_reason?: string | null
+          sla_hours?: number | null
+          status?: Database["public"]["Enums"]["document_request_status"] | null
+          template_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_requests_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "document_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_templates: {
+        Row: {
+          auto_generate_allowed: boolean | null
+          created_at: string | null
+          created_by: string | null
+          default_approver_role: Database["public"]["Enums"]["app_role"] | null
+          default_delivery_method:
+            | Database["public"]["Enums"]["delivery_method"]
+            | null
+          default_sla_hours: number | null
+          document_type: Database["public"]["Enums"]["document_type"]
+          footer_asset_url: string | null
+          header_asset_url: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          placeholders: Json | null
+          requires_approval: boolean | null
+          template_content: string
+          updated_at: string | null
+          version: number | null
+        }
+        Insert: {
+          auto_generate_allowed?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          default_approver_role?: Database["public"]["Enums"]["app_role"] | null
+          default_delivery_method?:
+            | Database["public"]["Enums"]["delivery_method"]
+            | null
+          default_sla_hours?: number | null
+          document_type: Database["public"]["Enums"]["document_type"]
+          footer_asset_url?: string | null
+          header_asset_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          placeholders?: Json | null
+          requires_approval?: boolean | null
+          template_content: string
+          updated_at?: string | null
+          version?: number | null
+        }
+        Update: {
+          auto_generate_allowed?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          default_approver_role?: Database["public"]["Enums"]["app_role"] | null
+          default_delivery_method?:
+            | Database["public"]["Enums"]["delivery_method"]
+            | null
+          default_sla_hours?: number | null
+          document_type?: Database["public"]["Enums"]["document_type"]
+          footer_asset_url?: string | null
+          header_asset_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          placeholders?: Json | null
+          requires_approval?: boolean | null
+          template_content?: string
+          updated_at?: string | null
+          version?: number | null
+        }
+        Relationships: []
+      }
+      employee_documents: {
+        Row: {
+          created_at: string | null
+          document_type: Database["public"]["Enums"]["document_type"]
+          employee_id: string
+          expires_at: string | null
+          file_name: string
+          file_size: number | null
+          file_url: string
+          generated_by_request_id: string | null
+          id: string
+          is_signed: boolean | null
+          metadata: Json | null
+          signer_metadata: Json | null
+          tags: string[] | null
+          updated_at: string | null
+          uploaded_by: string | null
+          version: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          document_type: Database["public"]["Enums"]["document_type"]
+          employee_id: string
+          expires_at?: string | null
+          file_name: string
+          file_size?: number | null
+          file_url: string
+          generated_by_request_id?: string | null
+          id?: string
+          is_signed?: boolean | null
+          metadata?: Json | null
+          signer_metadata?: Json | null
+          tags?: string[] | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+          version?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          document_type?: Database["public"]["Enums"]["document_type"]
+          employee_id?: string
+          expires_at?: string | null
+          file_name?: string
+          file_size?: number | null
+          file_url?: string
+          generated_by_request_id?: string | null
+          id?: string
+          is_signed?: boolean | null
+          metadata?: Json | null
+          signer_metadata?: Json | null
+          tags?: string[] | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_documents_generated_by_request_id_fkey"
+            columns: ["generated_by_request_id"]
+            isOneToOne: false
+            referencedRelation: "document_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -68,6 +346,24 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "hr" | "manager" | "employee"
+      delivery_method: "portal" | "email" | "both"
+      document_format: "pdf" | "docx"
+      document_request_status:
+        | "pending"
+        | "awaiting_approval"
+        | "in_progress"
+        | "completed"
+        | "rejected"
+        | "changes_requested"
+        | "auto_generating"
+        | "sla_breached"
+      document_type:
+        | "offer_letter"
+        | "experience_letter"
+        | "salary_slip"
+        | "employment_verification"
+        | "relieving_letter"
+        | "custom"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -196,6 +492,26 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "hr", "manager", "employee"],
+      delivery_method: ["portal", "email", "both"],
+      document_format: ["pdf", "docx"],
+      document_request_status: [
+        "pending",
+        "awaiting_approval",
+        "in_progress",
+        "completed",
+        "rejected",
+        "changes_requested",
+        "auto_generating",
+        "sla_breached",
+      ],
+      document_type: [
+        "offer_letter",
+        "experience_letter",
+        "salary_slip",
+        "employment_verification",
+        "relieving_letter",
+        "custom",
+      ],
     },
   },
 } as const

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DocumentTemplate, DocumentType } from '@/types/documents';
+import { DocumentTemplate, DocumentType, DeliveryMethod } from '@/types/documents';
 import { demoTemplates, isDemoMode } from '@/data/demoDocuments';
 import { documentTypeLabels } from '@/utils/documentHelpers';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,7 +27,7 @@ export default function TemplateManager() {
     content: '',
     default_approver_role: 'hr' as 'hr' | 'admin' | 'manager',
     default_sla_hours: 24,
-    default_delivery_method: 'portal_email' as 'portal_email' | 'email_only',
+    default_delivery_method: 'both' as DeliveryMethod,
   });
 
   const handleCreate = () => {
@@ -38,7 +38,7 @@ export default function TemplateManager() {
       content: '',
       default_approver_role: 'hr',
       default_sla_hours: 24,
-      default_delivery_method: 'portal_email',
+      default_delivery_method: 'both',
     });
     setIsDialogOpen(true);
   };

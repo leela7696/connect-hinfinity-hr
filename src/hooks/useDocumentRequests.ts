@@ -3,7 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { DocumentRequest, EligibilityCheckResult } from '@/types/documents';
-import { demoRequests, isDemoMode } from '@/data/demoDocuments';
 
 export function useDocumentRequests() {
   const [requests, setRequests] = useState<DocumentRequest[]>([]);
@@ -11,48 +10,106 @@ export function useDocumentRequests() {
   const { user, profile } = useAuth();
   const { toast } = useToast();
 
+  const fetchRequests = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('document_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setRequests(data || []);
+    } catch (error: any) {
+      console.error('Error fetching requests:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load document requests',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (isDemoMode()) {
-      // Use demo data
-      if (profile?.role === 'admin' || profile?.role === 'hr') {
-        setRequests(demoRequests);
-      } else {
-        setRequests(demoRequests.filter(r => r.employee_id === user?.id));
-      }
+    if (!user) {
+      setRequests([]);
       setLoading(false);
       return;
     }
 
-    // TODO: Fetch from Supabase when tables are created
-    // fetchRequests();
-    setRequests([]);
-    setLoading(false);
+    fetchRequests();
+
+    // Set up realtime subscription for live updates
+    const channel = supabase
+      .channel('document-requests-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'document_requests',
+        },
+        (payload) => {
+          console.log('Document request change:', payload);
+          // Refetch requests on any change
+          fetchRequests();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user, profile]);
 
   const createRequest = async (requestData: Partial<DocumentRequest>) => {
-    if (isDemoMode()) {
-      toast({
-        title: 'Demo Mode',
-        description: 'Request created in demo mode (not saved)',
-      });
-      return { data: { id: 'demo-req-' + Date.now() }, error: null };
-    }
-
     try {
-      // TODO: Implement Supabase insertion
-      // const { data, error } = await supabase
-      //   .from('document_requests')
-      //   .insert([{ ...requestData, employee_id: user?.id }])
-      //   .select()
-      //   .single();
+      // Get employee name from profile
+      const employeeName = profile?.full_name || user?.email || 'Unknown';
+
+      const insertData: any = {
+        document_type: requestData.document_type!,
+        purpose: requestData.purpose!,
+        format: requestData.format || 'pdf',
+        delivery_method: requestData.delivery_method || 'both',
+        employee_id: user?.id,
+        employee_name: employeeName,
+      };
+
+      if (requestData.period) {
+        insertData.period = requestData.period;
+      }
+      if (requestData.status) {
+        insertData.status = requestData.status;
+      }
+
+      const { data, error } = await supabase
+        .from('document_requests')
+        .insert([insertData])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Create audit log
+      await supabase.from('document_audit_logs').insert({
+        actor_id: user?.id,
+        actor_name: employeeName,
+        action: 'request_created',
+        request_id: data.id,
+        after_state: data,
+      });
 
       toast({
         title: 'Request Submitted',
         description: 'Your document request has been submitted successfully',
       });
 
-      return { data: null, error: null };
+      return { data, error: null };
     } catch (error: any) {
+      console.error('Error creating request:', error);
       toast({
         title: 'Error',
         description: error.message,
@@ -67,28 +124,55 @@ export function useDocumentRequests() {
     status: DocumentRequest['status'],
     metadata?: { reason?: string; comment?: string }
   ) => {
-    if (isDemoMode()) {
-      toast({
-        title: 'Demo Mode',
-        description: 'Status updated in demo mode (not saved)',
-      });
-      return { error: null };
-    }
-
     try {
-      // TODO: Implement Supabase update
-      // const { error } = await supabase
-      //   .from('document_requests')
-      //   .update({ status, ...metadata, updated_at: new Date().toISOString() })
-      //   .eq('id', requestId);
+      // Get the current request for audit trail
+      const { data: currentRequest } = await supabase
+        .from('document_requests')
+        .select('*')
+        .eq('id', requestId)
+        .single();
+
+      const updateData: any = { status };
+      
+      if (metadata?.reason) {
+        updateData.rejection_reason = metadata.reason;
+      }
+      if (metadata?.comment) {
+        updateData.comment = metadata.comment;
+      }
+
+      // Add approval metadata if approved
+      if (status === 'approved') {
+        updateData.approved_by = user?.id;
+        updateData.approved_at = new Date().toISOString();
+      }
+
+      const { error } = await supabase
+        .from('document_requests')
+        .update(updateData)
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      // Create audit log
+      const employeeName = profile?.full_name || user?.email || 'Unknown';
+      await supabase.from('document_audit_logs').insert({
+        actor_id: user?.id,
+        actor_name: employeeName,
+        action: `request_${status}`,
+        request_id: requestId,
+        before_state: currentRequest,
+        after_state: { ...currentRequest, ...updateData },
+      });
 
       toast({
         title: 'Status Updated',
-        description: `Request ${status}`,
+        description: `Request ${status.replace('_', ' ')}`,
       });
 
       return { error: null };
     } catch (error: any) {
+      console.error('Error updating request:', error);
       toast({
         title: 'Error',
         description: error.message,

@@ -19,9 +19,11 @@ export type RequestStatus =
   | 'changes_requested'
   | 'sla_breached';
 
-export type DeliveryMethod = 'portal_email' | 'email_only';
+export type DeliveryMethod = 'portal' | 'email' | 'both';
 
 export type DocumentFormat = 'pdf' | 'docx';
+
+export type DocumentRequestStatus = RequestStatus;
 
 export interface DocumentRequest {
   id: string;
@@ -29,25 +31,24 @@ export interface DocumentRequest {
   employee_name?: string;
   document_type: DocumentType;
   purpose: string;
-  period_start?: string;
-  period_end?: string;
+  period?: string;
   format: DocumentFormat;
   delivery_method: DeliveryMethod;
   status: RequestStatus;
-  attachments?: string[];
+  attachments?: any;
   approver_id?: string;
-  approver_name?: string;
+  approved_by?: string;
+  approved_at?: string;
+  rejection_reason?: string;
+  comment?: string;
+  generated_document_url?: string;
   created_at: string;
   updated_at: string;
   due_by?: string;
-  sla_seconds?: number;
+  sla_hours: number;
   escalation_level: number;
-  eligible: boolean;
-  requires_approval: boolean;
-  eligibility_reason?: string;
-  rejection_reason?: string;
-  comments?: DocumentComment[];
-  generated_document_id?: string;
+  template_id?: string;
+  metadata?: any;
 }
 
 export interface DocumentComment {

@@ -20,10 +20,9 @@ export default function RequestDocument() {
   
   const [documentType, setDocumentType] = useState<DocumentType>('salary_slip');
   const [purpose, setPurpose] = useState('');
-  const [periodStart, setPeriodStart] = useState('');
-  const [periodEnd, setPeriodEnd] = useState('');
+  const [period, setPeriod] = useState('');
   const [format, setFormat] = useState<DocumentFormat>('pdf');
-  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>('portal_email');
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>('both');
   const [attachments, setAttachments] = useState<File[]>([]);
   
   const [eligibility, setEligibility] = useState<EligibilityCheckResult | null>(null);
@@ -57,16 +56,13 @@ export default function RequestDocument() {
       const requestData = {
         document_type: documentType,
         purpose,
-        period_start: documentType === 'salary_slip' ? periodStart : undefined,
-        period_end: documentType === 'salary_slip' ? periodEnd : undefined,
+        period: documentType === 'salary_slip' ? period : undefined,
         format,
         delivery_method: deliveryMethod,
-        status: eligibility.requiresApproval ? 'awaiting_approval' : 'auto_generating',
-        eligible: eligibility.eligible,
-        requires_approval: eligibility.requiresApproval,
+        status: eligibility.requiresApproval ? ('awaiting_approval' as any) : ('auto_generating' as any),
       };
 
-      await createRequest(requestData as any);
+      await createRequest(requestData);
       
       toast({
         title: 'Request Submitted',
@@ -142,27 +138,15 @@ export default function RequestDocument() {
 
             {/* Period (for salary slips) */}
             {documentType === 'salary_slip' && (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="periodStart">Period Start *</Label>
-                  <Input
-                    id="periodStart"
-                    type="date"
-                    value={periodStart}
-                    onChange={(e) => setPeriodStart(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="periodEnd">Period End *</Label>
-                  <Input
-                    id="periodEnd"
-                    type="date"
-                    value={periodEnd}
-                    onChange={(e) => setPeriodEnd(e.target.value)}
-                    required
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="period">Period *</Label>
+                <Input
+                  id="period"
+                  type="month"
+                  value={period}
+                  onChange={(e) => setPeriod(e.target.value)}
+                  required
+                />
               </div>
             )}
 
@@ -188,8 +172,9 @@ export default function RequestDocument() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="portal_email">Portal + Email</SelectItem>
-                  <SelectItem value="email_only">Email Only</SelectItem>
+                  <SelectItem value="both">Portal + Email</SelectItem>
+                  <SelectItem value="email">Email Only</SelectItem>
+                  <SelectItem value="portal">Portal Only</SelectItem>
                 </SelectContent>
               </Select>
             </div>
