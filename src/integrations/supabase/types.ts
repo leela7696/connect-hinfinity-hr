@@ -334,6 +334,111 @@ export type Database = {
         }
         Relationships: []
       }
+      team_members: {
+        Row: {
+          employee_id: string
+          id: string
+          is_primary: boolean | null
+          joined_on: string
+          role_in_team: string
+          status: string
+          team_id: string
+        }
+        Insert: {
+          employee_id: string
+          id?: string
+          is_primary?: boolean | null
+          joined_on?: string
+          role_in_team: string
+          status?: string
+          team_id: string
+        }
+        Update: {
+          employee_id?: string
+          id?: string
+          is_primary?: boolean | null
+          joined_on?: string
+          role_in_team?: string
+          status?: string
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          department: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          manager_id: string
+          name: string
+          slug: string
+          tags: string[] | null
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          department: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          manager_id: string
+          name: string
+          slug: string
+          tags?: string[] | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          department?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          manager_id?: string
+          name?: string
+          slug?: string
+          tags?: string[] | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "teams_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

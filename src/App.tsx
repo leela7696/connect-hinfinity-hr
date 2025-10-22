@@ -18,6 +18,8 @@ import MyRequests from "./pages/Documents/MyRequests";
 import MyDocuments from "./pages/Documents/MyDocuments";
 import DocumentRequestsQueue from "./pages/Documents/DocumentRequestsQueue";
 import TemplateManager from "./pages/Documents/TemplateManager";
+import TeamsDirectory from "./pages/Teams/TeamsDirectory";
+import TeamDetail from "./pages/Teams/TeamDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -71,6 +73,8 @@ const App: React.FC = () => {
               <Route path="/documents/my-documents" element={<ProtectedRoute><MyDocuments /></ProtectedRoute>} />
               <Route path="/documents/queue" element={<ProtectedRoute requiredRoles={['admin', 'hr']}><DocumentRequestsQueue /></ProtectedRoute>} />
               <Route path="/documents/templates" element={<ProtectedRoute requiredRoles={['admin']}><TemplateManager /></ProtectedRoute>} />
+              <Route path="/teams" element={<ProtectedRoute><TeamsDirectory /></ProtectedRoute>} />
+              <Route path="/teams/:teamId" element={<ProtectedRoute><TeamDetail /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

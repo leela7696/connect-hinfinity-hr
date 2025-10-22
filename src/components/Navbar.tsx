@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Building, Users, FileText } from 'lucide-react';
+import { Menu, X, Building, Users, FileText, UsersRound } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export function Navbar() {
@@ -40,6 +40,10 @@ export function Navbar() {
             {user ? (
               <div className="flex items-center space-x-4">
                 <Button onClick={() => navigate('/dashboard')} variant="outline">Dashboard</Button>
+                <Button onClick={() => navigate('/teams')} variant="outline">
+                  <UsersRound className="h-4 w-4 mr-2" />
+                  Teams
+                </Button>
                 <Button onClick={() => navigate('/documents/my-requests')} variant="outline">
                   <FileText className="h-4 w-4 mr-2" />
                   Documents

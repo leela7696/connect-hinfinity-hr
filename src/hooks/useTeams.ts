@@ -26,7 +26,7 @@ export function useTeams(filters?: {
         .from('teams')
         .select(`
           *,
-          profiles:manager_id (
+          manager:profiles!teams_manager_id_fkey (
             full_name,
             user_id
           )
@@ -57,11 +57,11 @@ export function useTeams(filters?: {
       // Transform data
       const transformedTeams = (data || []).map(team => ({
         ...team,
-        manager_name: team.profiles?.full_name,
-        manager_email: team.profiles?.user_id,
+        manager_name: (team.manager as any)?.full_name,
+        manager_email: (team.manager as any)?.user_id,
       }));
 
-      setTeams(transformedTeams);
+      setTeams(transformedTeams as Team[]);
     } catch (err: any) {
       console.error('Error fetching teams:', err);
       setError(err.message);
@@ -80,9 +80,13 @@ export function useTeams(filters?: {
       const { data, error } = await supabase
         .from('teams')
         .insert({
-          ...teamData,
-          created_by: user?.id,
+          name: teamData.name!,
           slug: teamData.name?.toLowerCase().replace(/\s+/g, '-') || '',
+          department: teamData.department!,
+          manager_id: teamData.manager_id!,
+          description: teamData.description || '',
+          tags: teamData.tags || [],
+          is_active: teamData.is_active ?? true,
         })
         .select()
         .single();

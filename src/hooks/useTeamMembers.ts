@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from '@/hooks/use-toast';
-import { TeamMember, BulkImportRequest, BulkImportResult } from '@/types/teams';
+import { TeamMember, TeamMemberRole, BulkImportRequest, BulkImportResult } from '@/types/teams';
 
 export function useTeamMembers(teamId?: string) {
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -34,12 +34,13 @@ export function useTeamMembers(teamId?: string) {
 
       const transformedMembers = (data || []).map(member => ({
         ...member,
-        employee_name: member.profiles?.full_name,
-        employee_email: member.profiles?.user_id,
-        employee_avatar: member.profiles?.avatar_url,
+        employee_name: (member.profiles as any)?.full_name,
+        employee_email: (member.profiles as any)?.user_id,
+        employee_avatar: (member.profiles as any)?.avatar_url,
+        role_in_team: member.role_in_team as TeamMemberRole,
       }));
 
-      setMembers(transformedMembers);
+      setMembers(transformedMembers as TeamMember[]);
     } catch (err: any) {
       console.error('Error fetching team members:', err);
       setError(err.message);
@@ -53,8 +54,11 @@ export function useTeamMembers(teamId?: string) {
       const { error } = await supabase
         .from('team_members')
         .insert({
-          ...memberData,
-          joined_on: new Date().toISOString(),
+          team_id: memberData.team_id!,
+          employee_id: memberData.employee_id!,
+          role_in_team: memberData.role_in_team!,
+          status: memberData.status || 'active',
+          is_primary: memberData.is_primary ?? true,
         });
 
       if (error) throw error;
