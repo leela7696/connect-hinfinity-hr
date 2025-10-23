@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TeamCard } from '@/components/team/TeamCard';
@@ -25,19 +25,20 @@ export default function TeamsDirectory() {
   const canCreateTeam = hasPermission('create', 'team');
 
   // Fetch managers for the dropdown
-  useState(() => {
+  useEffect(() => {
     const fetchManagers = async () => {
       const { data } = await supabase
         .from('profiles')
         .select('user_id, full_name')
-        .in('role', ['admin', 'hr', 'manager']);
+        .in('role', ['admin', 'hr', 'manager'])
+        .order('full_name');
       
       if (data) {
         setManagers(data);
       }
     };
     fetchManagers();
-  });
+  }, []);
 
   const handleCreateTeam = async (teamData: any) => {
     await createTeam(teamData);

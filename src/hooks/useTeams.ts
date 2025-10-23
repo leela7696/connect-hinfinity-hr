@@ -77,10 +77,6 @@ export function useTeams(filters?: {
 
   const createTeam = async (teamData: Partial<Team>): Promise<Team | null> => {
     try {
-      console.log('Creating team with data:', teamData);
-      console.log('Current user:', user);
-      console.log('Current profile:', profile);
-      
       const { data, error } = await supabase
         .from('teams')
         .insert({
@@ -96,7 +92,6 @@ export function useTeams(filters?: {
         .select()
         .single();
 
-      console.log('Create team response:', { data, error });
       if (error) throw error;
 
       toast({
