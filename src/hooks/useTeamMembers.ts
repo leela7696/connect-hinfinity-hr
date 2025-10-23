@@ -51,7 +51,10 @@ export function useTeamMembers(teamId?: string) {
 
   const addMember = async (memberData: Partial<TeamMember>): Promise<boolean> => {
     try {
-      const { error } = await supabase
+      console.log('Adding member with data:', memberData);
+      console.log('Current user:', user);
+      
+      const { data, error } = await supabase
         .from('team_members')
         .insert({
           team_id: memberData.team_id!,
@@ -59,8 +62,10 @@ export function useTeamMembers(teamId?: string) {
           role_in_team: memberData.role_in_team!,
           status: memberData.status || 'active',
           is_primary: memberData.is_primary ?? true,
-        });
+        })
+        .select();
 
+      console.log('Add member response:', { data, error });
       if (error) throw error;
 
       toast({
