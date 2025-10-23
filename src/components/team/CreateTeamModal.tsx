@@ -44,7 +44,7 @@ const departments = [
 export function CreateTeamModal({ open, onClose, onSubmit, managers }: CreateTeamModalProps) {
   const [formData, setFormData] = useState<Partial<Team>>({
     name: '',
-    department: '',
+    department: departments[0],
     manager_id: '',
     description: '',
     tags: [],

@@ -8,16 +8,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Users, TrendingUp, AlertCircle, CheckCircle2, UserPlus } from 'lucide-react';
 import { useTeams } from '@/hooks/useTeams';
 import { useTeamMembers } from '@/hooks/useTeamMembers';
-import { supabase } from '@/integrations/supabase/client';
-import { TeamMetrics } from '@/types/teams';
+import { usePermissions } from '@/hooks/usePermissions';
+import { TeamMetrics, TeamMember, TeamMemberRole } from '@/types/teams';
+import { AddMemberModal } from '@/components/team/AddMemberModal';
+import { MemberActionsMenu } from '@/components/team/MemberActionsMenu';
+import { ChangeRoleModal } from '@/components/team/ChangeRoleModal';
+import { TransferMemberModal } from '@/components/team/TransferMemberModal';
 
 export default function TeamDetail() {
   const { teamId } = useParams<{ teamId: string }>();
   const { teams } = useTeams();
-  const { members, loading: membersLoading } = useTeamMembers(teamId);
+  const { members, loading: membersLoading, addMember, updateMember, removeMember, transferMember } = useTeamMembers(teamId);
+  const { canManageTeam, role } = usePermissions();
   const [metrics, setMetrics] = useState<TeamMetrics | null>(null);
+  const [showAddMember, setShowAddMember] = useState(false);
+  const [showChangeRole, setShowChangeRole] = useState(false);
+  const [showTransfer, setShowTransfer] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   
   const team = teams.find(t => t.id === teamId);
+  const canEdit = role === 'admin' || role === 'hr' || (team && canManageTeam(team.manager_id));
 
   useEffect(() => {
     // CALL SERVERLESS: POST /api/team/metrics
@@ -72,10 +82,12 @@ export default function TeamDetail() {
               </div>
             </div>
             
-            <Button>
-              <UserPlus className="h-4 w-4 mr-2" />
-              Add Member
-            </Button>
+            {canEdit && (
+              <Button onClick={() => setShowAddMember(true)}>
+                <UserPlus className="h-4 w-4 mr-2" />
+                Add Member
+              </Button>
+            )}
           </div>
 
           {/* KPI Cards */}
@@ -174,8 +186,8 @@ export default function TeamDetail() {
                               <Users className="h-5 w-5 text-primary" />
                             </div>
                             <div>
-                              <p className="font-medium">{member.employee_name}</p>
-                              <p className="text-sm text-muted-foreground">{member.employee_email}</p>
+                              <p className="font-medium">{member.employee_name || 'Unknown'}</p>
+                              <p className="text-sm text-muted-foreground">{member.employee_email || 'No email'}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -183,6 +195,19 @@ export default function TeamDetail() {
                             <Badge variant={member.status === 'active' ? 'default' : 'secondary'}>
                               {member.status}
                             </Badge>
+                            <MemberActionsMenu
+                              member={member}
+                              canEdit={canEdit}
+                              onChangeRole={(id) => {
+                                setSelectedMember(member);
+                                setShowChangeRole(true);
+                              }}
+                              onTransfer={(id) => {
+                                setSelectedMember(member);
+                                setShowTransfer(true);
+                              }}
+                              onRemove={removeMember}
+                            />
                           </div>
                         </div>
                       ))}
@@ -222,6 +247,41 @@ export default function TeamDetail() {
           </Tabs>
         </div>
       </main>
+
+      {/* Modals */}
+      {teamId && (
+        <>
+          <AddMemberModal
+            open={showAddMember}
+            onClose={() => setShowAddMember(false)}
+            teamId={teamId}
+            onSubmit={addMember}
+          />
+          
+          <ChangeRoleModal
+            open={showChangeRole}
+            onClose={() => {
+              setShowChangeRole(false);
+              setSelectedMember(null);
+            }}
+            member={selectedMember}
+            onSubmit={async (memberId, newRole) => {
+              return await updateMember(memberId, { role_in_team: newRole });
+            }}
+          />
+          
+          <TransferMemberModal
+            open={showTransfer}
+            onClose={() => {
+              setShowTransfer(false);
+              setSelectedMember(null);
+            }}
+            member={selectedMember}
+            currentTeamId={teamId}
+            onSubmit={transferMember}
+          />
+        </>
+      )}
     </div>
   );
 }
