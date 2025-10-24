@@ -55,11 +55,23 @@ export function useTeams(filters?: {
       if (fetchError) throw fetchError;
 
       // Transform data
-      const transformedTeams = (data || []).map(team => ({
+      let transformedTeams = (data || []).map(team => ({
         ...team,
         manager_name: (team.manager as any)?.full_name,
         manager_email: (team.manager as any)?.user_id,
       }));
+
+      // For employees, filter to only show teams they belong to
+      if (profile?.role === 'employee' && user?.id) {
+        const { data: membershipData } = await supabase
+          .from('team_members')
+          .select('team_id')
+          .eq('employee_id', user.id)
+          .eq('status', 'active');
+
+        const teamIds = new Set(membershipData?.map(m => m.team_id) || []);
+        transformedTeams = transformedTeams.filter(team => teamIds.has(team.id));
+      }
 
       setTeams(transformedTeams as Team[]);
     } catch (err: any) {
