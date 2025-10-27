@@ -54,11 +54,21 @@ export function useTeams(filters?: {
 
       if (fetchError) throw fetchError;
 
+      // Fetch member counts for all teams
+      const { data: memberCountsData } = await supabase
+        .from('team_member_counts')
+        .select('*');
+
+      const memberCountsMap = new Map(
+        memberCountsData?.map(mc => [mc.team_id, mc.member_count]) || []
+      );
+
       // Transform data
       let transformedTeams = (data || []).map(team => ({
         ...team,
         manager_name: (team.manager as any)?.full_name,
         manager_email: (team.manager as any)?.user_id,
+        member_count: memberCountsMap.get(team.id) || 0,
       }));
 
       // For employees, filter to only show teams they belong to
