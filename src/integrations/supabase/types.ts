@@ -334,6 +334,105 @@ export type Database = {
         }
         Relationships: []
       }
+      team_activity_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string
+          created_at: string
+          description: string
+          id: string
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string
+          team_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_name: string
+          created_at?: string
+          description: string
+          id?: string
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type: string
+          team_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string
+          created_at?: string
+          description?: string
+          id?: string
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_activity_log_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "team_member_counts"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "team_activity_log_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_analytics: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json | null
+          metric_date: string
+          metric_type: string
+          metric_value: number
+          team_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_date: string
+          metric_type: string
+          metric_value: number
+          team_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_date?: string
+          metric_type?: string
+          metric_value?: number
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_analytics_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "team_member_counts"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "team_analytics_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       team_members: {
         Row: {
           employee_id: string
@@ -372,6 +471,79 @@ export type Database = {
           },
           {
             foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "team_member_counts"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_projects: {
+        Row: {
+          assigned_members: string[] | null
+          completion_percentage: number | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          name: string
+          priority: string
+          start_date: string | null
+          status: string
+          tags: string[] | null
+          team_id: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_members?: string[] | null
+          completion_percentage?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          priority?: string
+          start_date?: string | null
+          status?: string
+          tags?: string[] | null
+          team_id: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_members?: string[] | null
+          completion_percentage?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          priority?: string
+          start_date?: string | null
+          status?: string
+          tags?: string[] | null
+          team_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_projects_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "team_member_counts"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "team_projects_team_id_fkey"
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
@@ -465,7 +637,13 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      team_member_counts: {
+        Row: {
+          member_count: number | null
+          team_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_primary_role: { Args: { _user_id: string }; Returns: string }
